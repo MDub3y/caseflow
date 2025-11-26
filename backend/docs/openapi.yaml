@@ -1,0 +1,167 @@
+openapi: 3.0.0
+info:
+  title: CaseFlow API
+  description: API for CaseFlow data ingestion platform.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3001/api
+    description: Local Development Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  /login:
+    post:
+      summary: Authenticate user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: admin@caseflow.com
+                password:
+                  type: string
+                  example: Admin@123
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id: { type: string }
+                      email: { type: string }
+                      role: { type: string, enum: [ADMIN, OPERATOR] }
+                  accessToken:
+                    type: string
+
+  /imports/start:
+    post:
+      summary: Start a new import session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileName: { type: string }
+                totalRows: { type: integer }
+      responses:
+        "200":
+          description: Import session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  importId: { type: string }
+
+  /cases/batch:
+    post:
+      summary: Upload a batch of cases
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                importId: { type: string }
+                cases:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      case_id: { type: string }
+                      applicant_name: { type: string }
+                      dob: { type: string, format: date }
+                      email: { type: string }
+                      phone: { type: string }
+                      category: { type: string, enum: [TAX, LICENSE, PERMIT] }
+                      priority: { type: string, enum: [LOW, MEDIUM, HIGH] }
+      responses:
+        "200":
+          description: Batch processed results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created: { type: array, items: { type: object } }
+                  updated: { type: array, items: { type: object } }
+                  skipped: { type: array, items: { type: object } }
+                  failed: { type: array, items: { type: object } }
+
+  /cases:
+    get:
+      summary: Get list of cases
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer }
+        - in: query
+          name: cursor
+          schema: { type: string }
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: category
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of cases
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { type: object } }
+                  total: { type: integer }
+                  pagination:
+                    type: object
+                    properties:
+                      nextCursor: { type: string }
+                      hasMore: { type: boolean }
+
+  /cases/{id}:
+    get:
+      summary: Get details for a specific case
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Case details found
+    delete:
+      summary: Delete a case (Admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Case deleted

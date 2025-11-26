@@ -46,6 +46,7 @@ CaseFlow follows a **Three-Tier Architecture** containerized with Docker.
 | **Validation** | Zod, Libphonenumber-js   | Isomorphic validation (shared logic) and strict phone parsing.            |
 | **Testing**    | Playwright, Vitest, Jest | Full coverage: E2E, Component Unit, and Backend Service tests.            |
 | **DevOps**     | Docker, GitHub Actions   | Containerization for consistent dev/prod environments.                    |
+| **Infra**      | Terraform (IaC)          | Reproducible infrastructure deployment on AWS.                            |
 
 ## 🚀 Getting Started (Run Locally)
 
@@ -183,29 +184,21 @@ We employ a "Testing Trophy" approach:
 
 **Coverage:** Core business logic (Validation/Import) has >90% coverage.
 
-## 🚢 Deployment
+## ☁️ Deployment & Infrastructure
 
-The application is designed to be deployed on **AWS EC2** using Docker Compose.
+### Infrastructure as Code (Terraform)
 
-### Environment Variables (.env)
+###
 
-Ensure these are set in your production environment:
+We use Terraform to provision AWS resources reproducibly.
 
-##
+- **VPC:** Isolated network for security.
+- **EC2:** App server hosting Docker containers.
+- **RDS (Optional):** Managed PostgreSQL for production data persistence.
 
-| **Variable**         | **Description**                                            |
-| -------------------- | ---------------------------------------------------------- |
-| `DATABASE_URL`       | Connection string for PostgreSQL (RDS or Docker)           |
-| `JWT_SECRET`         | Strong random string for signing tokens                    |
-| `JWT_REFRESH_SECRET` | Strong random string for refresh tokens                    |
-| `CORS_ORIGIN`        | The URL of your frontend (e.g., `https://caseflow.com`)    |
-| `VITE_API_URL`       | The URL of your backend (e.g., `https://api.caseflow.com`) |
+### CI/CD (GitHub Actions)
 
-### Quick Deploy (EC2)
+###
 
-1.  SSH into instance.
-2.  Install Docker & Docker Compose.
-3.  Clone repo.
-4.  Set .env files.
-5.  Run sudo docker-compose up -d --build.
-6.  Run migrations: sudo docker-compose exec backend npx prisma migrate deploy.
+- **CI:** Lints code and runs Unit/E2E tests on every push.
+- **CD:** Automated deployment to EC2 via SSH.

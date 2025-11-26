@@ -1,0 +1,6 @@
+case_id,applicant_name,dob,email,phone,category,priority
+C-1001,John Doe,1990-01-01,john@example.com,+12025550101,TAX,HIGH
+C-1002,Jane Smith,1985-05-15,jane@example.com,+12025550102,LICENSE,MEDIUM
+C-1003,Bob Brown,1978-11-20,bob@example.com,+12025550103,PERMIT,LOW
+C-1004,Alice Green,1992-03-10,alice@example.com,+12025550104,TAX,LOW
+C-1005,Charlie Black,1988-07-25,charlie@example.com,+12025550105,LICENSE,HIGH
