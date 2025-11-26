@@ -8,7 +8,7 @@ Getty ImagesExplore
 
 ## 📺 Demo & Links
 
-- **Live Demo:** \[Link to your deployed URL\]
+- **Live Demo:** [Live Demo](http://98.84.26.141:5173/)
 - **Demo Video:** \[Link to your Loom/YouTube video\]
 
 ## 🏗️ Architecture Overview
