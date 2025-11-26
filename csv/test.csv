@@ -1,0 +1,11 @@
+case_id,applicant_name,dob,email,phone,category,priority
+C-1001,John Doe,1990-01-01,john.doe@example.com,+12025550101,TAX,HIGH
+C-1002,  Alice Smith  ,1985-05-15,alice.smith@test.co,(555) 123-4567,LICENSE,MEDIUM
+C-1003,Bob White,1800-01-01,bob.white@history.com,+12025559999,PERMIT,LOW
+C-1004,Future Case,2099-12-31,future@time.com,+12025558888,TAX,LOW
+C-1005,Missing Priority,1992-07-20,priority@missing.com,+12025557777,LICENSE,
+C-1006,Bad Email Format,1988-03-10,not-an-email,1234567890,PERMIT,HIGH
+C-1007,,1995-11-11,no.name@example.com,+12025556666,TAX,MEDIUM
+C-1008,Invalid Category,1980-02-28,bad.cat@example.com,+12025555555,FISHING,LOW
+C-1009,Tiny Tim,2010-06-01,tim@example.com,invalid-phone-number,LICENSE,HIGH
+C-1001,Duplicate ID,1999-09-09,dupe@example.com,+12025554444,TAX,LOW

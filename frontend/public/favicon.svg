@@ -1,0 +1,18 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    shapeRendering="geometricPrecision"
+  >
+    <path d="M4 4h8v4H6v8h6v4H4z" fillOpacity="0.9" />
+    <path d="M14 4h8v4h-6v2h4v4h-4v6h-4V4z" fillOpacity="0.7" />
+    <rect
+      x="20"
+      y="18"
+      width="4"
+      height="4"
+      fillOpacity="1"
+      className="text-blue-500"
+    />
+  </svg>
