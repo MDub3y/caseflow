@@ -171,6 +171,7 @@ jobs:
           JWT_REFRESH_SECRET: test-refresh-secret
           PORT: 3001
           NODE_OPTIONS: "--dns-result-order=ipv4first"
+          CORS_ORIGIN: "http://localhost:5173"
         run: npm start &
 
       # ----------------------------------------------------------------
