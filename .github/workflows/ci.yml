@@ -205,7 +205,7 @@ jobs:
       - name: Run E2E tests
         working-directory: ./frontend
         env:
-          VITE_API_URL: http://localhost:3001/api
+          VITE_API_URL: http://127.0.0.1:3001/api
         # Playwright config will see port 5173 is free and start the server
         run: npm run e2e
 
