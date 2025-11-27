@@ -7,9 +7,6 @@ on:
     branches: [main, develop]
 
 jobs:
-  # ------------------------------------------------------------------
-  # JOB 1: LINT & TYPECHECK
-  # ------------------------------------------------------------------
   lint-and-typecheck:
     runs-on: ubuntu-latest
     strategy:
@@ -38,9 +35,6 @@ jobs:
         working-directory: ./${{ matrix.workspace }}
         run: npm run type-check
 
-  # ------------------------------------------------------------------
-  # JOB 2: BACKEND UNIT TESTS
-  # ------------------------------------------------------------------
   test-backend:
     runs-on: ubuntu-latest
 
@@ -97,9 +91,6 @@ jobs:
           files: ./backend/coverage/coverage-final.json
           flags: backend
 
-  # ------------------------------------------------------------------
-  # JOB 3: FRONTEND UNIT TESTS
-  # ------------------------------------------------------------------
   test-frontend:
     runs-on: ubuntu-latest
 
@@ -127,12 +118,8 @@ jobs:
           files: ./frontend/coverage/coverage-final.json
           flags: frontend
 
-  # ------------------------------------------------------------------
-  # JOB 4: E2E TESTS (Fixed & Robust)
-  # ------------------------------------------------------------------
   e2e-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 15 # Fails if it gets stuck
 
     services:
       postgres:
@@ -157,12 +144,11 @@ jobs:
         with:
           node-version: "18"
 
-      # --- BACKEND PREP ---
       - name: Install backend dependencies
         working-directory: ./backend
         run: npm ci
 
-      - name: Setup backend (migrate + seed)
+      - name: Setup backend
         working-directory: ./backend
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/caseflow_test
@@ -173,7 +159,7 @@ jobs:
           npx prisma migrate deploy
           npx prisma db seed
 
-      - name: Start backend (Background)
+      - name: Start backend
         working-directory: ./backend
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/caseflow_test
@@ -182,7 +168,6 @@ jobs:
           PORT: 3001
         run: npm start &
 
-      # --- FRONTEND PREP ---
       - name: Install frontend dependencies
         working-directory: ./frontend
         run: npm ci
@@ -191,27 +176,10 @@ jobs:
         working-directory: ./frontend
         run: npx playwright install --with-deps
 
-      - name: Build & Start Frontend (Background)
-        working-directory: ./frontend
-        env:
-          VITE_API_URL: http://localhost:3001/api
-        run: |
-          npm run build
-          npm run preview -- --port=5173 &
-
-      # --- CRITICAL FIX: WAIT ---
-      - name: Wait for servers to be ready
-        run: |
-          npm install -g wait-on
-          # Wait for Backend (3001) AND Frontend (5173) to be listening
-          npx wait-on tcp:3001 tcp:5173 -t 60000
-
-      # --- RUN TEST ---
       - name: Run E2E tests
         working-directory: ./frontend
         env:
           VITE_API_URL: http://localhost:3001/api
-          BASE_URL: http://localhost:5173
         run: npm run e2e
 
       - name: Upload test results
