@@ -125,7 +125,7 @@ export const useCsvStore = create<CsvState>()(
                     const oldCaseId = row.data.case_id;
                     const newData = { ...row.data, [columnId]: value };
 
-                    let errors = validateRow(newData);
+                    const errors = validateRow(newData);
 
                     newRows[index] = {
                         ...row,

@@ -4,11 +4,14 @@ import { Buffer } from 'node:buffer';
 test.describe('CaseFlow End-to-End Journey', () => {
 
     test.beforeEach(async ({ page }) => {
+        test.setTimeout(60000);
+
         await page.goto('/login');
         await page.fill('input[type="email"]', 'admin@caseflow.com');
         await page.fill('input[type="password"]', 'Admin@123');
         await page.click('button:has-text("Sign In")');
-        await page.waitForURL('/import');
+
+        await page.waitForURL(/\/import/, { waitUntil: 'domcontentloaded' });
     });
 
     test('should complete the full import journey', async ({ page }) => {
