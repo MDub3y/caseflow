@@ -195,9 +195,7 @@ jobs:
       - name: Build Frontend
         working-directory: ./frontend
         env:
-          VITE_API_URL: http://localhost:3001/api
-        # We run build so the production artifacts are ready.
-        # We DO NOT run 'preview'. Playwright will run it.
+          VITE_API_URL: http://127.0.0.1:3001/api
         run: npm run build
 
       # ----------------------------------------------------------------
