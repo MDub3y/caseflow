@@ -15,7 +15,19 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
+            set -e
+
             cd caseflow
+
+            echo "🚀 Pulling latest changes..."
             git pull origin main
+
+            echo "🐳 Rebuilding and restarting containers..."
             sudo docker compose up -d --build
+
+            echo "📦 Running migrations..."
             sudo docker compose exec -T backend npx prisma migrate deploy
+
+            sudo docker image prune -f
+
+            echo "✅ Deployment Complete!"
