@@ -120,6 +120,7 @@ jobs:
 
   e2e-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     services:
       postgres:
@@ -144,22 +145,23 @@ jobs:
         with:
           node-version: "18"
 
+      # ----------------------------------------------------------------
+      # 1. SET UP BACKEND
+      # ----------------------------------------------------------------
       - name: Install backend dependencies
         working-directory: ./backend
         run: npm ci
 
-      - name: Setup backend
+      - name: Setup backend (migrate + seed)
         working-directory: ./backend
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/caseflow_test
-          JWT_SECRET: test-secret
-          JWT_REFRESH_SECRET: test-refresh-secret
         run: |
           npx prisma generate
           npx prisma migrate deploy
           npx prisma db seed
 
-      - name: Start backend
+      - name: Start backend (Background)
         working-directory: ./backend
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/caseflow_test
@@ -168,6 +170,9 @@ jobs:
           PORT: 3001
         run: npm start &
 
+      # ----------------------------------------------------------------
+      # 2. SET UP FRONTEND (This was missing!)
+      # ----------------------------------------------------------------
       - name: Install frontend dependencies
         working-directory: ./frontend
         run: npm ci
@@ -176,10 +181,31 @@ jobs:
         working-directory: ./frontend
         run: npx playwright install --with-deps
 
+      - name: Build and Start Frontend (Background)
+        working-directory: ./frontend
+        env:
+          VITE_API_URL: http://localhost:3001/api
+        run: |
+          npm run build
+          npm run preview -- --port=5173 &
+
+      # ----------------------------------------------------------------
+      # 3. CRITICAL: WAIT FOR SERVERS
+      # ----------------------------------------------------------------
+      - name: Wait for servers to be ready
+        run: |
+          npm install -g wait-on
+          # Wait for Backend (3001) AND Frontend (5173) to be reachable
+          npx wait-on tcp:3001 tcp:5173 -t 60000
+
+      # ----------------------------------------------------------------
+      # 4. RUN TESTS
+      # ----------------------------------------------------------------
       - name: Run E2E tests
         working-directory: ./frontend
         env:
           VITE_API_URL: http://localhost:3001/api
+          BASE_URL: http://localhost:5173
         run: npm run e2e
 
       - name: Upload test results
