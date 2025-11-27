@@ -4,12 +4,31 @@
 
 CaseFlow is a high-performance, full-stack data ingestion platform designed to handle large datasets (50k+ rows) with a focus on User Experience, Accessibility, and Data Integrity. It allows operations teams to upload CSVs, clean data in a virtualized grid, and bulk-import cases into a PostgreSQL database with robust validation and audit trails.
 
-Getty ImagesExplore
-
 ## 📺 Demo & Links
 
+### 🎥 [Watch the Full Video Walkthrough (Loom)](https://www.loom.com/share/89a93d6166b04328b379718a3b91116f)
+
+[![Watch the video](https://cdn.loom.com/sessions/thumbnails/89a93d6166b04328b379718a3b91116f-with-play.gif)](https://www.loom.com/share/89a93d6166b04328b379718a3b91116f)
+
 - **Live Demo:** [Live Demo](http://98.84.26.141:5173/)
-- **Demo Video:** \[Link to your Loom/YouTube video\]
+- **API Documentation:** See `openapi.yaml` in this repository.
+
+## Application Screenshots
+
+### Landing Page
+
+![Landing Page Light](frontend/public/landing.png)
+![Landing Page Dark](frontend/public/landing-dark.png)
+
+### Import Screen
+
+![Import Screen Light](frontend/public/import.png)
+![Import Screen Dark](frontend/public/import-dark.png)
+
+### Case List
+
+![Case List Light](frontend/public/caselist.png)
+![Case List Dark](frontend/public/caselist-dark.png)
 
 ## 🏗️ Architecture Overview
 
