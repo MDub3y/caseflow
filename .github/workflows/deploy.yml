@@ -15,34 +15,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            set -e
-
-            # 1. CLONE IF IT DOESN'T EXIST (Fixes "First Run" error)
-            if [ ! -d "caseflow" ]; then
-              echo "🚀 Repository not found. Cloning..."
-              git clone https://github.com/${{ github.repository }}.git caseflow
-            fi
-
-            # 2. NAVIGATE AND PULL
             cd caseflow
-            echo "⬇️ Pulling latest changes..."
             git pull origin main
-
-            # 3. BUILD AND START (Using standard docker compose)
-            echo "🐳 Rebuilding containers..."
-            # Note: If this fails with "command not found", change to "docker-compose" (with dash)
-            sudo docker compose down
             sudo docker compose up -d --build
-
-            # 4. WAIT FOR BACKEND TO BOOT (Fixes the Race Condition)
-            echo "⏳ Waiting 10s for backend to initialize..."
-            sleep 10
-
-            # 5. RUN MIGRATIONS
-            echo "📦 Running migrations..."
-            # Using -T is correct for CI environments
             sudo docker compose exec -T backend npx prisma migrate deploy
-
-            # 6. CLEANUP
-            sudo docker image prune -f
-            echo "✅ Deployment Complete!"
