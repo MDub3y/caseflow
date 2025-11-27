@@ -120,6 +120,105 @@ jobs:
 
   e2e-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 10 # Safety timeout
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: caseflow_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      # --------------------------------------------------------
+      # 1. SETUP & START BACKEND
+      # --------------------------------------------------------
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Setup Database (Migrate & Seed)
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/caseflow_test
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+          npx prisma db seed
+
+      - name: Start Backend (Background)
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/caseflow_test
+          JWT_SECRET: test-secret
+          JWT_REFRESH_SECRET: test-refresh-secret
+          PORT: 3001
+        # The '&' runs it in the background so CI can move to next step
+        run: npm start &
+
+      # --------------------------------------------------------
+      # 2. SETUP & START FRONTEND
+      # --------------------------------------------------------
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps
+
+      - name: Build Frontend & Start Preview
+        working-directory: ./frontend
+        env:
+          VITE_API_URL: http://localhost:3001/api
+        # We build first, then serve the build on port 5173 in background
+        run: |
+          npm run build
+          npm run preview -- --port=5173 &
+
+      # --------------------------------------------------------
+      # 3. THE MISSING LINK: WAIT FOR SERVERS
+      # --------------------------------------------------------
+      - name: Wait for Backend & Frontend to be Ready
+        # This acts like the "human" waiting for logs to settle
+        run: |
+          npm install -g wait-on
+          # Wait for TCP ports 3001 (Backend) and 5173 (Frontend) to be open
+          npx wait-on tcp:3001 tcp:5173 -t 60000
+
+      # --------------------------------------------------------
+      # 4. RUN TESTS
+      # --------------------------------------------------------
+      - name: Run E2E tests
+        working-directory: ./frontend
+        env:
+          VITE_API_URL: http://localhost:3001/api
+          # Tell Playwright where the app is running
+          BASE_URL: http://localhost:5173
+        run: npm run e2e
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+    runs-on: ubuntu-latest
 
     services:
       postgres:

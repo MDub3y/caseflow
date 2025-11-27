@@ -9,7 +9,6 @@ import {
   Phone,
   User,
   Clock,
-  FileText,
   Tag,
   Hash,
 } from "lucide-react";
