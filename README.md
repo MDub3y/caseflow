@@ -8,7 +8,7 @@ CaseFlow is a high-performance, full-stack data ingestion platform designed to h
 
 ### 🎥 [Watch the Full Video Walkthrough (Loom)](https://www.loom.com/share/89a93d6166b04328b379718a3b91116f)
 
-[![Watch the video](https://cdn.loom.com/sessions/thumbnails/89a93d6166b04328b379718a3b91116f-with-play.gif)](https://www.loom.com/share/89a93d6166b04328b379718a3b91116f)
+[![Watch the video](frontend/public/demo.png)](https://www.loom.com/share/89a93d6166b04328b379718a3b91116f)
 
 - **Live Demo:** [Live Demo](http://98.84.26.141:5173/)
 - **API Documentation:** See `openapi.yaml` in this repository.
